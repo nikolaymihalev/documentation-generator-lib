@@ -3,9 +3,9 @@ using System.Reflection;
 using System.Text;
 using System.Xml.Linq;
 
-namespace ModelDocGenerator;
+namespace DocumentationLib;
 
-public static class ModelDocGenerator
+internal static class ModelDocGenerator
 {
     public static string Generate(Type modelType, string xmlFilePath = "")
     {
@@ -91,3 +91,4 @@ public static class ModelDocGenerator
         return string.Empty;
     }
 }
+

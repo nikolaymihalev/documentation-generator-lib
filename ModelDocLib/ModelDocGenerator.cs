@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 using System.Text;
+using System.Xml.Linq;
 
 namespace ModelDocGenerator;
 
 public static class ModelDocGenerator
 {
-
-    public static string Generate(Type modelType)
+    public static string Generate(Type modelType, string xmlFilePath = "")
     {
         var stringBuilder = new StringBuilder();
         
@@ -24,7 +24,7 @@ public static class ModelDocGenerator
 
             string typeName = prop.PropertyType.Name;
             
-            string description = prop.GetCustomAttribute<DescriptionAttribute>()?.Description ?? "-";
+            string description = GetPropertyDescription(modelType, prop, xmlFilePath);
 
             string value = GetDefaultValue(modelType, prop);
 
@@ -60,5 +60,34 @@ public static class ModelDocGenerator
         {
             return "-";
         }
+    }
+
+    private static string GetPropertyDescription(Type modelType, PropertyInfo property, string xmlFilePath)
+    {
+        var description = property.GetCustomAttribute<DescriptionAttribute>()?.Description ?? null;
+
+        if (!string.IsNullOrEmpty(description))
+            return description;
+
+        if (!string.IsNullOrEmpty(xmlFilePath))
+            return GetXmlSummary(xmlFilePath ,modelType, property);
+
+        return "-";
+    }
+
+    private static string GetXmlSummary(string xmlFilePath, Type modelType, PropertyInfo property)
+    {
+        if (File.Exists(xmlFilePath))
+        {
+            XDocument _xmlDocumentation = XDocument.Load(xmlFilePath);
+
+            string memberName = $"P:{modelType.FullName}.{property.Name}";
+            var memberNode = _xmlDocumentation.Descendants("member")
+                .FirstOrDefault(x => x.Attribute("name")?.Value == memberName);
+
+            return memberNode?.Element("summary")?.Value.Trim()!;
+        }
+
+        return string.Empty;
     }
 }

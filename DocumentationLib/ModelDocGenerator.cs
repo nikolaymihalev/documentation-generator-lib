@@ -31,7 +31,13 @@ internal static class ModelDocGenerator
 
             string value = GetDefaultValue(modelType, prop);
 
-            stringBuilder.AppendLine($"| {propName} | {typeName} | {description} | {value} |");
+            switch (format)
+            {
+                case "markdown":
+                    stringBuilder.AppendLine(string.Format(FormatTextConstants.MarkdownRow, propName, typeName, description, value)); break;
+                case "csv":
+                    stringBuilder.AppendLine(string.Format(FormatTextConstants.CsvRow, propName, typeName, description, value)); break;
+            }
         }
 
         return stringBuilder.ToString();

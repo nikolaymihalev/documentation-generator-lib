@@ -6,6 +6,7 @@ internal static class FormatTextConstants
                 Environment.NewLine + 
                 "| Property | Type | Description | Value |" + Environment.NewLine +
                 "|----------|------|-------------|-------|";
-
     public static string CsvHeader = "Property,Type,Description,Value";
+    public static string CsvRow = "{0},{1},{2},{3}";
+    public static string MarkdownRow = "| {0} | {1} | {2} | {3} |";
 }

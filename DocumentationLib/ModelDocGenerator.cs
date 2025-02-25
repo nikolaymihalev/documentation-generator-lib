@@ -7,14 +7,17 @@ namespace DocumentationLib;
 
 internal static class ModelDocGenerator
 {
-    public static string Generate(Type modelType, string xmlFilePath = "")
+    public static string GenerateInTextFormat(Type modelType, string format, string xmlFilePath = "")
     {
         var stringBuilder = new StringBuilder();
         
-        stringBuilder.AppendLine($"# {modelType.Name} Model");
-        stringBuilder.AppendLine();
-        stringBuilder.AppendLine("| Property | Type | Description | Value |");
-        stringBuilder.AppendLine("|----------|------|-------------|-------|");
+        switch (format)
+        {
+            case "markdown":
+                stringBuilder.AppendLine(string.Format(FormatTextConstants.MarkdownHeader, modelType.Name)); break;
+            case "csv":
+                stringBuilder.AppendLine(FormatTextConstants.CsvHeader); break;
+        }
         
         var properties = modelType.GetProperties();
 

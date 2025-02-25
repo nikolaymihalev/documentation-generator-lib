@@ -5,6 +5,8 @@ using System.Text.Json;
 using System.Xml.Linq;
 using DocumentationLib.Constants;
 using DocumentationLib.Enums;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace DocumentationLib;
 
@@ -52,23 +54,26 @@ internal static class ModelDocGenerator
     {
         var modelType = typeof(T);
 
-        var properties = modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
         if(format == DocFormat.Json)
         {
-            var jsonModel = new {
-                ModelName = modelType.Name,
-                Properties = properties.Select(prop => new {
-                    Name = prop.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? prop.Name ?? "-",
-                    Type = prop.PropertyType.Name,
-                    Description = GetPropertyDescription(modelType, prop, xmlFilePath),
-                    DefaultValue = GetDefaultValue(modelType, prop)
-                })
-            };
-
+            var jsonModel = GetModel(modelType, xmlFilePath);
 
             return JsonSerializer.Serialize(jsonModel, new JsonSerializerOptions { WriteIndented = true });
-        }        
+        }      
+        else if(format == DocFormat.Yaml)
+        {
+            var yamlModel = GetModel(modelType, xmlFilePath);
+
+            var serializer = new SerializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .Build();
+
+            return serializer.Serialize(yamlModel);
+        }
+        else
+        {
+            return string.Empty;
+        }  
     }
 
     private static string GetDefaultValue(Type modelType, PropertyInfo property)
@@ -126,5 +131,20 @@ internal static class ModelDocGenerator
         }
 
         return string.Empty;
+    }
+
+    private static object GetModel(Type modelType, string xmlFilePath)
+    {
+        var properties = modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+        return new {
+            ModelName = modelType.Name,
+            Properties = properties.Select(prop => new {
+                Name = prop.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? prop.Name ?? "-",
+                Type = prop.PropertyType.Name,
+                Description = GetPropertyDescription(modelType, prop, xmlFilePath),
+                DefaultValue = GetDefaultValue(modelType, prop)
+            })
+        };
     }
 }

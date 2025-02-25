@@ -1,4 +1,4 @@
-﻿namespace DocumentationLib;
+﻿namespace DocumentationLib.Constants;
 
 internal static class FormatTextConstants
 {  

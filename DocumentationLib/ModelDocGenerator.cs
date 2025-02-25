@@ -2,20 +2,24 @@
 using System.Reflection;
 using System.Text;
 using System.Xml.Linq;
+using DocumentationLib.Constants;
+using DocumentationLib.Enums;
 
 namespace DocumentationLib;
 
 internal static class ModelDocGenerator
 {
-    public static string GenerateInTextFormat(Type modelType, string format, string xmlFilePath = "")
+    public static string GenerateInTextFormat<T>(DocFormat format, string xmlFilePath = "")
     {
+        var modelType = typeof(T);
+
         var stringBuilder = new StringBuilder();
         
         switch (format)
         {
-            case "markdown":
+            case DocFormat.Markdown:
                 stringBuilder.AppendLine(string.Format(FormatTextConstants.MarkdownHeader, modelType.Name)); break;
-            case "csv":
+            case DocFormat.Csv:
                 stringBuilder.AppendLine(FormatTextConstants.CsvHeader); break;
         }
         
@@ -33,9 +37,9 @@ internal static class ModelDocGenerator
 
             switch (format)
             {
-                case "markdown":
+                case DocFormat.Markdown:
                     stringBuilder.AppendLine(string.Format(FormatTextConstants.MarkdownRow, propName, typeName, description, value)); break;
-                case "csv":
+                case DocFormat.Csv:
                     stringBuilder.AppendLine(string.Format(FormatTextConstants.CsvRow, propName, typeName, description, value)); break;
             }
         }

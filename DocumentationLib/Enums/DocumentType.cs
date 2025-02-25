@@ -1,6 +1,6 @@
 ﻿namespace DocumentationLib.Enums;
 
-internal enum DocFormat
+internal enum DocumentType
 {
     Markdown,
     Csv,

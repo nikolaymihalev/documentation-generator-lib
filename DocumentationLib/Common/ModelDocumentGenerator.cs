@@ -8,11 +8,11 @@ using DocumentationLib.Enums;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace DocumentationLib;
+namespace DocumentationLib.Common;
 
-internal static class ModelDocGenerator
+internal static class ModelDocumentGenerator
 {
-    public static string GenerateText<T>(DocFormat format, string xmlFilePath = "")
+    public static string GenerateText<T>(DocumentType format, string xmlFilePath = "")
     {
         var modelType = typeof(T);
 
@@ -20,9 +20,9 @@ internal static class ModelDocGenerator
         
         switch (format)
         {
-            case DocFormat.Markdown:
+            case DocumentType.Markdown:
                 stringBuilder.AppendLine(string.Format(FormatTextConstants.MarkdownHeader, modelType.Name)); break;
-            case DocFormat.Csv:
+            case DocumentType.Csv:
                 stringBuilder.AppendLine(FormatTextConstants.CsvHeader); break;
         }
         
@@ -40,9 +40,9 @@ internal static class ModelDocGenerator
 
             switch (format)
             {
-                case DocFormat.Markdown:
+                case DocumentType.Markdown:
                     stringBuilder.AppendLine(string.Format(FormatTextConstants.MarkdownRow, propName, typeName, description, value)); break;
-                case DocFormat.Csv:
+                case DocumentType.Csv:
                     stringBuilder.AppendLine(string.Format(FormatTextConstants.CsvRow, propName, typeName, description, value)); break;
             }
         }
@@ -50,30 +50,24 @@ internal static class ModelDocGenerator
         return stringBuilder.ToString();
     }
 
-    public static string GenerateModel<T>(DocFormat format, string xmlFilePath = "")
+    public static string GenerateModel<T>(DocumentType format, string xmlFilePath = "")
     {
         var modelType = typeof(T);
+        
+        var result = GetModel(modelType, xmlFilePath);
 
-        if(format == DocFormat.Json)
+        if(format == DocumentType.Json)
+            return JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true });
+        else if(format == DocumentType.Yaml)
         {
-            var jsonModel = GetModel(modelType, xmlFilePath);
-
-            return JsonSerializer.Serialize(jsonModel, new JsonSerializerOptions { WriteIndented = true });
-        }      
-        else if(format == DocFormat.Yaml)
-        {
-            var yamlModel = GetModel(modelType, xmlFilePath);
-
             var serializer = new SerializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
 
-            return serializer.Serialize(yamlModel);
+            return serializer.Serialize(result);
         }
         else
-        {
             return string.Empty;
-        }  
     }
 
     private static string GetDefaultValue(Type modelType, PropertyInfo property)

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Xml.Linq;
 using DocumentationLib.Constants;
 using DocumentationLib.Enums;
@@ -9,7 +10,7 @@ namespace DocumentationLib;
 
 internal static class ModelDocGenerator
 {
-    public static string GenerateInTextFormat<T>(DocFormat format, string xmlFilePath = "")
+    public static string GenerateText<T>(DocFormat format, string xmlFilePath = "")
     {
         var modelType = typeof(T);
 
@@ -23,7 +24,7 @@ internal static class ModelDocGenerator
                 stringBuilder.AppendLine(FormatTextConstants.CsvHeader); break;
         }
         
-        var properties = modelType.GetProperties();
+        var properties = modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
         foreach (var prop in properties)
         {
@@ -45,6 +46,29 @@ internal static class ModelDocGenerator
         }
 
         return stringBuilder.ToString();
+    }
+
+    public static string GenerateModel<T>(DocFormat format, string xmlFilePath = "")
+    {
+        var modelType = typeof(T);
+
+        var properties = modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+        if(format == DocFormat.Json)
+        {
+            var jsonModel = new {
+                ModelName = modelType.Name,
+                Properties = properties.Select(prop => new {
+                    Name = prop.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? prop.Name ?? "-",
+                    Type = prop.PropertyType.Name,
+                    Description = GetPropertyDescription(modelType, prop, xmlFilePath),
+                    DefaultValue = GetDefaultValue(modelType, prop)
+                })
+            };
+
+
+            return JsonSerializer.Serialize(jsonModel, new JsonSerializerOptions { WriteIndented = true });
+        }        
     }
 
     private static string GetDefaultValue(Type modelType, PropertyInfo property)
@@ -104,4 +128,3 @@ internal static class ModelDocGenerator
         return string.Empty;
     }
 }
-

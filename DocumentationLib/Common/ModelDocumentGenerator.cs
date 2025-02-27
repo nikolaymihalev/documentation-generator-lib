@@ -38,12 +38,14 @@ internal static class ModelDocumentGenerator
 
             string value = GetDefaultValue(modelType, prop);
 
+            var attributes = GetPropertyAttributes(prop);
+
             switch (format)
             {
                 case DocumentType.Markdown:
-                    stringBuilder.AppendLine(string.Format(FormatTextConstants.MarkdownRow, propName, typeName, description, value)); break;
+                    stringBuilder.AppendLine(string.Format(FormatTextConstants.MarkdownRow, propName, typeName, description, attributes, value)); break;
                 case DocumentType.Csv:
-                    stringBuilder.AppendLine(string.Format(FormatTextConstants.CsvRow, propName, typeName, description, value)); break;
+                    stringBuilder.AppendLine(string.Format(FormatTextConstants.CsvRow, propName, typeName, description, attributes, value)); break;
             }
         }
 
@@ -69,6 +71,8 @@ internal static class ModelDocumentGenerator
         else
             return string.Empty;
     }
+
+    #region Private Methods
 
     private static string GetDefaultValue(Type modelType, PropertyInfo property)
     {
@@ -143,22 +147,23 @@ internal static class ModelDocumentGenerator
     }
 
     private static List<string> GetPropertyAttributes(PropertyInfo prop)
-    { 
-        return prop.GetCustomAttributes().Select(attr =>
-            {
-                var attrType = attr.GetType();
-                var attrName = attrType.Name.Replace("Attribute", ""); 
-                
-                var parameters = attrType.GetConstructors()
-                        .FirstOrDefault()?
-                        .GetParameters()
-                        .Select(p => p.Name)
-                        .ToList();
+        => prop.GetCustomAttributes()
+                .Select(attr =>
+                {
+                    var attrType = attr.GetType();
+                    var attrName = attrType.Name.Replace("Attribute", ""); 
+                    
+                    var parameters = attrType.GetConstructors()
+                            .FirstOrDefault()?
+                            .GetParameters()
+                            .Select(p => p.Name)
+                            .ToList();
 
-                return parameters != null && parameters.Count > 0
-                    ? $"{attrName}({string.Join(", ", parameters)})"
-                    : attrName;
-            })
-            .ToList();
-    }
+                    return parameters != null && parameters.Count > 0
+                        ? $"{attrName}({string.Join(", ", parameters)})"
+                        : attrName;
+                })
+                .ToList();
+
+    #endregion
 }

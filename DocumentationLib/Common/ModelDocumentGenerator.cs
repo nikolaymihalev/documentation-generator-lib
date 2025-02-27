@@ -38,7 +38,7 @@ internal static class ModelDocumentGenerator
 
             string value = GetDefaultValue(modelType, prop);
 
-            var attributes = GetPropertyAttributes(prop);
+            string attributes = GetPropertyAttributes(prop);
 
             switch (format)
             {
@@ -147,24 +147,30 @@ internal static class ModelDocumentGenerator
         };
     }
 
-    private static List<string> GetPropertyAttributes(PropertyInfo prop)
-        => prop.GetCustomAttributes()
-                .Select(attr =>
-                {
-                    var attrType = attr.GetType();
-                    var attrName = attrType.Name.Replace("Attribute", ""); 
-                    
-                    var parameters = attrType.GetConstructors()
-                            .FirstOrDefault()?
-                            .GetParameters()
-                            .Select(p => p.Name)
-                            .ToList();
+    private static string  GetPropertyAttributes(PropertyInfo prop)
+    {
+        var attributes = prop.GetCustomAttributes()
+            .Select(attr =>
+            {
+                var attrType = attr.GetType();
+                var attrName = attrType.Name.Replace("Attribute", ""); 
+                
+                var constructor = attrType.GetConstructors().FirstOrDefault();
+                var arguments = constructor != null
+                    ? constructor.GetParameters()
+                        .Select(p => attrType.GetProperty(p.Name!)?.GetValue(attr)?.ToString())
+                        .Where(v => v != null)
+                        .ToList()!
+                    : new List<string>();
 
-                    return parameters != null && parameters.Count > 0
-                        ? $"{attrName}({string.Join(", ", parameters)})"
-                        : attrName;
-                })
-                .ToList();
+                return arguments.Any()
+                    ? $"{attrName}({string.Join(", ", arguments)})"
+                    : attrName;
+            })
+            .ToList();
+
+        return attributes.Any() ? string.Join(", ", attributes) : "-";
+    }
 
     #endregion
 }

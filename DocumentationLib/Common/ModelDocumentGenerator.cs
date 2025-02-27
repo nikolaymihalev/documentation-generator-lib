@@ -141,6 +141,7 @@ internal static class ModelDocumentGenerator
                 Name = prop.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? prop.Name ?? "-",
                 Type = prop.PropertyType.Name,
                 Description = GetPropertyDescription(modelType, prop, xmlFilePath),
+                Attributes = GetPropertyAttributes(prop),
                 DefaultValue = GetDefaultValue(modelType, prop)
             })
         };

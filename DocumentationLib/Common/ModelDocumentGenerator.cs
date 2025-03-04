@@ -58,7 +58,7 @@ internal static class ModelDocumentGenerator
 
         foreach(var type in types)
         {
-            stringBuilder.AppendLine(GetText(type, format));
+            stringBuilder.AppendLine(GetText(type, format, stringBuilder));
         }
 
         return stringBuilder.ToString().Trim();
@@ -163,7 +163,7 @@ internal static class ModelDocumentGenerator
         return attributes.Any() ? string.Join(", ", attributes) : "-";
     }
 
-    private static string GetText(Type modelType, DocumentType format)
+    private static string GetText(Type modelType, DocumentType format, StringBuilder sb)
     {
         var properties = modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
@@ -182,13 +182,13 @@ internal static class ModelDocumentGenerator
             switch (format)
             {
                 case DocumentType.Markdown:
-                    return string.Format(FormatTextConstants.MarkdownRow, propName, typeName, description, attributes, value);
+                    sb.AppendLine(string.Format(FormatTextConstants.MarkdownRow, propName, typeName, description, attributes, value)); break;
                 case DocumentType.Csv:
-                    return string.Format(FormatTextConstants.CsvRow, propName, typeName, description, attributes, value);
+                    sb.AppendLine(string.Format(FormatTextConstants.CsvRow, propName, typeName, description, attributes, value)); break;
             }
         }
 
-        return string.Empty;
+        return sb.ToString();
     }
     #endregion
 }

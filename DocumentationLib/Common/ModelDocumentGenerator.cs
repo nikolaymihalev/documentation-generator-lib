@@ -12,6 +12,7 @@ namespace DocumentationLib.Common;
 
 internal static class ModelDocumentGenerator
 {
+    #region Generate From Single Model
     public static string GenerateText<T>(DocumentType format)
     {
         var modelType = typeof(T);
@@ -71,6 +72,22 @@ internal static class ModelDocumentGenerator
         else
             return string.Empty;
     }
+
+    #endregion
+
+    #region Generate From Multiple Models
+    public static string GenerateTextFromArray(DocumentType format, params Type[] types)
+    {
+        var stringBuilder = new StringBuilder();
+
+        foreach(var item in types)
+        {
+        }
+
+        return stringBuilder.ToString().Trim();
+    }
+
+    #endregion
 
     #region Private Methods
 

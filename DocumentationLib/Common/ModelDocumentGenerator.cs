@@ -15,7 +15,7 @@ internal static class ModelDocumentGenerator
     #region Generate From Single Model
     public static string GenerateText<T>(DocumentType format)
     {
-        var modelType = typeof(T);
+        Type modelType = typeof(T);
 
         var stringBuilder = new StringBuilder();
         
@@ -27,35 +27,14 @@ internal static class ModelDocumentGenerator
                 stringBuilder.AppendLine(FormatTextConstants.CsvHeader); break;
         }
         
-        var properties = modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-        foreach (var prop in properties)
-        {
-            string propName = prop.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? prop.Name ?? "-";
-
-            string typeName = prop.PropertyType.Name;
-            
-            string description = GetPropertyDescription(modelType, prop);
-
-            string value = GetDefaultValue(modelType, prop);
-
-            string attributes = GetPropertyAttributes(prop);
-
-            switch (format)
-            {
-                case DocumentType.Markdown:
-                    stringBuilder.AppendLine(string.Format(FormatTextConstants.MarkdownRow, propName, typeName, description, attributes, value)); break;
-                case DocumentType.Csv:
-                    stringBuilder.AppendLine(string.Format(FormatTextConstants.CsvRow, propName, typeName, description, attributes, value)); break;
-            }
-        }
+        stringBuilder.AppendLine(GetText(modelType, format));
 
         return stringBuilder.ToString();
     }
 
     public static string GenerateModel<T>(DocumentType format)
     {
-        var modelType = typeof(T);
+        Type modelType = typeof(T);
         
         var result = GetModel(modelType);
 
@@ -76,12 +55,13 @@ internal static class ModelDocumentGenerator
     #endregion
 
     #region Generate From Multiple Models
-    public static string GenerateTextFromArray(DocumentType format, params Type[] types)
+    public static string GenerateTextFromArray(Type[] types, DocumentType format)
     {
         var stringBuilder = new StringBuilder();
 
-        foreach(var item in types)
+        foreach(var type in types)
         {
+            stringBuilder.AppendLine(GetText(type, format));
         }
 
         return stringBuilder.ToString().Trim();
@@ -186,5 +166,32 @@ internal static class ModelDocumentGenerator
         return attributes.Any() ? string.Join(", ", attributes) : "-";
     }
 
+    private static string GetText(Type modelType, DocumentType format)
+    {
+        var properties = modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+        foreach (var prop in properties)
+        {
+            string propName = prop.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? prop.Name ?? "-";
+
+            string typeName = prop.PropertyType.Name;
+            
+            string description = GetPropertyDescription(modelType, prop);
+
+            string value = GetDefaultValue(modelType, prop);
+
+            string attributes = GetPropertyAttributes(prop);
+
+            switch (format)
+            {
+                case DocumentType.Markdown:
+                    return string.Format(FormatTextConstants.MarkdownRow, propName, typeName, description, attributes, value);
+                case DocumentType.Csv:
+                    return string.Format(FormatTextConstants.CsvRow, propName, typeName, description, attributes, value);
+            }
+        }
+
+        return string.Empty;
+    }
     #endregion
 }

@@ -27,7 +27,7 @@ internal static class ModelDocumentGenerator
                 stringBuilder.AppendLine(FormatTextConstants.CsvHeader); break;
         }
         
-        stringBuilder.AppendLine(GetText(modelType, format));
+        stringBuilder.AppendLine(GetText(modelType, format, stringBuilder));
 
         return stringBuilder.ToString();
     }
@@ -38,18 +38,15 @@ internal static class ModelDocumentGenerator
         
         var result = GetModel(modelType);
 
-        if(format == DocumentType.Json)
-            return JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true });
-        else if(format == DocumentType.Yaml)
+        return format switch
         {
-            var serializer = new SerializerBuilder()
+            DocumentType.Json => JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true }),
+            DocumentType.Yaml => new SerializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
-                .Build();
-
-            return serializer.Serialize(result);
-        }
-        else
-            return string.Empty;
+                .Build()
+                .Serialize(result),
+            _ => string.Empty
+        };
     }
 
     #endregion

@@ -12,7 +12,7 @@ namespace DocumentationLib.Common;
 
 internal static class ModelDocumentGenerator
 {
-    public static string GenerateText<T>(DocumentType format, string xmlFilePath = "")
+    public static string GenerateText<T>(DocumentType format)
     {
         var modelType = typeof(T);
 
@@ -34,7 +34,7 @@ internal static class ModelDocumentGenerator
 
             string typeName = prop.PropertyType.Name;
             
-            string description = GetPropertyDescription(modelType, prop, xmlFilePath);
+            string description = GetPropertyDescription(modelType, prop);
 
             string value = GetDefaultValue(modelType, prop);
 
@@ -52,11 +52,11 @@ internal static class ModelDocumentGenerator
         return stringBuilder.ToString();
     }
 
-    public static string GenerateModel<T>(DocumentType format, string xmlFilePath = "")
+    public static string GenerateModel<T>(DocumentType format)
     {
         var modelType = typeof(T);
         
-        var result = GetModel(modelType, xmlFilePath);
+        var result = GetModel(modelType);
 
         if(format == DocumentType.Json)
             return JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true });
@@ -102,15 +102,12 @@ internal static class ModelDocumentGenerator
         }
     }
 
-    private static string GetPropertyDescription(Type modelType, PropertyInfo property, string xmlFilePath)
+    private static string GetPropertyDescription(Type modelType, PropertyInfo property)
     {
-        var description = property.GetCustomAttribute<DescriptionAttribute>()?.Description ?? null;
+        var description = property.GetCustomAttribute<DocumentationAttribute>()?.Summary ?? null;
 
         if (!string.IsNullOrEmpty(description))
             return description;
-
-        if (!string.IsNullOrEmpty(xmlFilePath))
-            return GetXmlSummary(xmlFilePath ,modelType, property);
 
         return "-";
     }
@@ -131,7 +128,7 @@ internal static class ModelDocumentGenerator
         return string.Empty;
     }
 
-    private static object GetModel(Type modelType, string xmlFilePath)
+    private static object GetModel(Type modelType)
     {
         var properties = modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
@@ -140,7 +137,7 @@ internal static class ModelDocumentGenerator
             Properties = properties.Select(prop => new {
                 Name = prop.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? prop.Name ?? "-",
                 Type = prop.PropertyType.Name,
-                Description = GetPropertyDescription(modelType, prop, xmlFilePath),
+                Description = GetPropertyDescription(modelType, prop),
                 Attributes = GetPropertyAttributes(prop),
                 DefaultValue = GetDefaultValue(modelType, prop)
             })

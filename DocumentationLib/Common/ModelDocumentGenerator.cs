@@ -51,49 +51,6 @@ internal static class ModelDocumentGenerator
 
     #endregion
 
-    #region Generate From Multiple Models
-    public static string GenerateTextFromArray(Type[] types, DocumentType format)
-    {
-        var stringBuilder = new StringBuilder();
-
-        foreach(var type in types)
-        {
-            stringBuilder.AppendLine((string)typeof(ModelDocumentGenerator)
-                .GetMethod(nameof(GenerateText))?
-                .MakeGenericMethod(type)
-                .Invoke(null, new object[]{format})!);
-        }
-
-        return stringBuilder.ToString().Trim();
-    }
-
-    public static string GenerateModelFromArray(Type[] types, DocumentType format)
-    {
-        var stringBuilder = new StringBuilder();
-
-        foreach(var type in types)
-        {
-            var result = GetModel(type);
-
-            switch(format)
-            {
-                case DocumentType.Json:
-                    stringBuilder.AppendLine(JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true })); 
-                    break;
-                case DocumentType.Yaml:
-                    stringBuilder.AppendLine(new SerializerBuilder()
-                        .WithNamingConvention(CamelCaseNamingConvention.Instance)
-                        .Build()
-                        .Serialize(result));
-                    break;
-            }
-        }
-
-        return stringBuilder.ToString().Trim();
-    }
-
-    #endregion
-
     #region Private Methods
 
     private static string GetDefaultValue(Type modelType, PropertyInfo property)

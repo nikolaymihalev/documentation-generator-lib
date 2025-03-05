@@ -16,16 +16,4 @@ public static class DocumentationGenerator
 
     public static string ExportModelAsCsv<T>() where T : class
         => ModelDocumentGenerator.GenerateText<T>(DocumentType.Csv);
-
-    public static string ExportArrayAsMarkdown(params Type[] types) 
-        => ModelDocumentGenerator.GenerateTextFromArray(types, DocumentType.Markdown);
-
-    public static string ExportArrayAsCsv(params Type[] types) 
-        => ModelDocumentGenerator.GenerateTextFromArray(types, DocumentType.Csv);
-
-    public static string ExportArrayAsYaml(params Type[] types)
-        => ModelDocumentGenerator.GenerateModelFromArray(types, DocumentType.Yaml);
-
-    public static string ExportArrayAsJson(params Type[] types)
-        => ModelDocumentGenerator.GenerateModelFromArray(types, DocumentType.Json);
 }

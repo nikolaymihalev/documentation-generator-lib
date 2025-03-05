@@ -58,7 +58,10 @@ internal static class ModelDocumentGenerator
 
         foreach(var type in types)
         {
-            stringBuilder.AppendLine(GetText(type, format, stringBuilder));
+            stringBuilder.AppendLine((string)typeof(ModelDocumentGenerator)
+                .GetMethod(nameof(GenerateText))?
+                .MakeGenericMethod(type)
+                .Invoke(null, new object[]{format})!);
         }
 
         return stringBuilder.ToString().Trim();

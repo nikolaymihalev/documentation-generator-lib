@@ -17,6 +17,15 @@ public static class DocumentationGenerator
     public static string ExportModelAsCsv<T>() where T : class
         => ModelDocumentGenerator.GenerateText<T>(DocumentType.Csv);
 
-    public static void SaveIntoFile(string[] documentations, string filePath, string? fileName = null)
-        => ModelDocumentGenerator.GenerateFile(documentations, filePath, fileName);
+    public static void SaveIntoFile(string[] documentations, string filePath)
+        => ModelDocumentGenerator.GenerateFile(documentations, filePath, null, false);
+
+    public static void SaveIntoFile(string[] documentations, string filePath, string fileName)
+        => ModelDocumentGenerator.GenerateFile(documentations, filePath, fileName, false);
+
+    public static void SaveIntoFile(string[] documentations, string filePath, bool append)
+        => ModelDocumentGenerator.GenerateFile(documentations, filePath, null, append);
+
+    public static void SaveIntoFile(string[] documentations, string filePath, string? fileName, bool append)
+        => ModelDocumentGenerator.GenerateFile(documentations, filePath, fileName, append);
 }

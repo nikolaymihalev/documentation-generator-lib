@@ -49,7 +49,7 @@ internal static class ModelDocumentGenerator
         };
     }
 
-    public static void GenerateFile(string[] documentations, string filePath, string? fileName = null)
+    public static void GenerateFile(string[] documentations, string filePath, string? fileName = null, bool append = false)
     {
         if(string.IsNullOrEmpty(fileName))
             fileName = "model_documentation.txt";
@@ -58,7 +58,7 @@ internal static class ModelDocumentGenerator
 
         string fullPath = Path.Combine(filePath, fileName!);
 
-        using(StreamWriter sw = new StreamWriter(fullPath, false))
+        using(StreamWriter sw = new StreamWriter(fullPath, append))
         {
             foreach (var documentation in documentations)
             {

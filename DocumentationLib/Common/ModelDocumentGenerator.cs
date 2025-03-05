@@ -12,7 +12,7 @@ namespace DocumentationLib.Common;
 
 internal static class ModelDocumentGenerator
 {
-    #region Generate From Single Model
+    #region Generating Methods
     public static string GenerateText<T>(DocumentType format)
     {
         Type modelType = typeof(T);
@@ -47,6 +47,15 @@ internal static class ModelDocumentGenerator
                 .Serialize(result),
             _ => string.Empty
         };
+    }
+
+    public static void GenerateFile(string[] documentations, string filePath, string fileName = "model_documentation.txt")
+    {
+        Directory.CreateDirectory(filePath);
+
+        string fullPath = Path.Combine(filePath, fileName);
+
+        File.WriteAllLines(fullPath, documentations);
     }
 
     #endregion

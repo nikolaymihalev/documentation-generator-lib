@@ -64,6 +64,31 @@ internal static class ModelDocumentGenerator
         return stringBuilder.ToString().Trim();
     }
 
+    public static string GenerateModelFromArray(Type[] types, DocumentType format)
+    {
+        var stringBuilder = new StringBuilder();
+
+        foreach(var type in types)
+        {
+            var result = GetModel(type);
+
+            switch(format)
+            {
+                case DocumentType.Json:
+                    stringBuilder.AppendLine(JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true })); 
+                    break;
+                case DocumentType.Yaml:
+                    stringBuilder.AppendLine(new SerializerBuilder()
+                        .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                        .Build()
+                        .Serialize(result));
+                    break;
+            }
+        }
+
+        return stringBuilder.ToString().Trim();
+    }
+
     #endregion
 
     #region Private Methods

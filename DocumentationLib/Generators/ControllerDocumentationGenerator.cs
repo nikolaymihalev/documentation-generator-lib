@@ -1,4 +1,5 @@
 ﻿using DocumentationLib;
+using DocumentationLib.Common;
 using DocumentationLib.Constants;
 using DocumentationLib.Enums;
 using System.Reflection;
@@ -6,11 +7,11 @@ using System.Text;
 
 namespace DocumentationLib.Generators;
 
-internal static class ControllerDocumentationGenerator
+internal class ControllerDocumentationGenerator : IDocumentationGenerator
 {
-    public static string GenerateTextDocs<TController>(DocumentType format)
+    public static string GenerateMarkdownOrCsvText<T>(DocumentType format)
     {
-        Type controllerType = typeof(TController);
+        Type controllerType = typeof(T);
         StringBuilder stringBuilder = new StringBuilder();
 
         string routePrefix = GetControllerRoutePrefix(controllerType);
@@ -53,6 +54,11 @@ internal static class ControllerDocumentationGenerator
         }
 
         return stringBuilder.ToString();
+    }
+
+    public static string GenerateJsonOrYmlText<T>(DocumentType format)
+    {
+        throw new NotImplementedException();
     }
 
     #region Private Methods

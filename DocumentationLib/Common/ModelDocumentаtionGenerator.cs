@@ -10,7 +10,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace DocumentationLib.Common;
 
-internal static class ModelDocumentGenerator
+internal static class ModelDocumentаtionGenerator
 {
     #region Generating Methods
     public static string GenerateText<T>(DocumentType format)

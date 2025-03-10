@@ -1,4 +1,5 @@
-﻿using DocumentationLib.Constants;
+﻿using DocumentationLib;
+using DocumentationLib.Constants;
 using DocumentationLib.Enums;
 using System.Reflection;
 using System.Text;
@@ -110,6 +111,11 @@ internal static class ControllerDocumentationGenerator
 
     private static string GetMethodDescription(MethodInfo method)
     {
+        var description = method.GetCustomAttribute<DocumentationAttribute>()?.Summary ?? null;
+
+        if (!string.IsNullOrEmpty(description))
+            return description;
+
         return "-"; 
     }
 

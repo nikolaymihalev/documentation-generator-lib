@@ -125,7 +125,7 @@ internal static class ModelDocumentаtionGenerator
         };
     }
 
-    private static string  GetPropertyAttributes(PropertyInfo prop)
+    private static string GetPropertyAttributes(PropertyInfo prop)
     {
         var attributes = prop.GetCustomAttributes()
             .Select(attr =>

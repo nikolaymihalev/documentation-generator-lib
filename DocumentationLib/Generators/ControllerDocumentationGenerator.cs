@@ -4,6 +4,8 @@ using DocumentationLib.Enums;
 using System.Reflection;
 using System.Text;
 
+namespace DocumentationLib.Generators;
+
 internal static class ControllerDocumentationGenerator
 {
     public static string GenerateTextDocs<TController>(DocumentType format)

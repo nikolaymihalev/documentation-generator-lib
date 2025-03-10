@@ -1,4 +1,5 @@
-﻿using DocumentationLib.Constants;
+﻿using DocumentationLib.Common;
+using DocumentationLib.Constants;
 using DocumentationLib.Enums;
 using System.ComponentModel;
 using System.Reflection;
@@ -8,17 +9,18 @@ using System.Xml.Linq;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace DocumentationLib.Common;
+namespace DocumentationLib.Generators;
 
-internal static class ModelDocumentаtionGenerator
+internal class ModelDocumentаtionGenerator : IDocumentationGenerator
 {
     #region Generating Methods
-    public static string GenerateText<T>(DocumentType format)
+
+    public static string GenerateMarkdownOrCsvText<T>(DocumentType format)
     {
         Type modelType = typeof(T);
 
         var stringBuilder = new StringBuilder();
-        
+
         switch (format)
         {
             case DocumentType.Markdown:
@@ -26,16 +28,16 @@ internal static class ModelDocumentаtionGenerator
             case DocumentType.Csv:
                 stringBuilder.AppendLine(string.Format(ModelTextConstants.CsvHeader, modelType.Name)); break;
         }
-        
+
         stringBuilder.AppendLine(GetText(modelType, format, stringBuilder));
 
         return stringBuilder.ToString();
     }
 
-    public static string GenerateModel<T>(DocumentType format)
+    public static string GenerateJsonOrYmlText<T>(DocumentType format)
     {
         Type modelType = typeof(T);
-        
+
         var result = GetModel(modelType);
 
         return format switch
@@ -51,14 +53,14 @@ internal static class ModelDocumentаtionGenerator
 
     public static void GenerateFile(string[] documentations, string filePath, string? fileName = null, bool append = false)
     {
-        if(string.IsNullOrEmpty(fileName))
+        if (string.IsNullOrEmpty(fileName))
             fileName = "model_documentation.txt";
 
         Directory.CreateDirectory(filePath);
 
         string fullPath = Path.Combine(filePath, fileName!);
 
-        using(StreamWriter sw = new StreamWriter(fullPath, append))
+        using (StreamWriter sw = new StreamWriter(fullPath, append))
         {
             foreach (var documentation in documentations)
             {
@@ -82,15 +84,15 @@ internal static class ModelDocumentаtionGenerator
             var instance = Activator.CreateInstance(modelType);
             var value = property.GetValue(instance);
 
-            if (value is null || value.ToString() is null) 
+            if (value is null || value.ToString() is null)
                 return "null";
-                
-            if (value is string strValue) 
+
+            if (value is string strValue)
                 return $"\"{strValue}\"";
-                
-            if (value is bool boolValue) 
+
+            if (value is bool boolValue)
                 return boolValue ? "true" : "false";
-                
+
             return value.ToString()!;
         }
         catch
@@ -113,9 +115,11 @@ internal static class ModelDocumentаtionGenerator
     {
         var properties = modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-        return new {
+        return new
+        {
             ModelName = modelType.Name,
-            Properties = properties.Select(prop => new {
+            Properties = properties.Select(prop => new
+            {
                 Name = prop.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? prop.Name ?? "-",
                 Type = prop.PropertyType.Name,
                 Description = GetPropertyDescription(modelType, prop),
@@ -131,8 +135,8 @@ internal static class ModelDocumentаtionGenerator
             .Select(attr =>
             {
                 var attrType = attr.GetType();
-                var attrName = attrType.Name.Replace("Attribute", ""); 
-                
+                var attrName = attrType.Name.Replace("Attribute", "");
+
                 var constructor = attrType.GetConstructors().FirstOrDefault();
                 var arguments = constructor != null
                     ? constructor.GetParameters()
@@ -159,7 +163,7 @@ internal static class ModelDocumentаtionGenerator
             string propName = prop.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? prop.Name ?? "-";
 
             string typeName = prop.PropertyType.Name;
-            
+
             string description = GetPropertyDescription(modelType, prop);
 
             string value = GetDefaultValue(modelType, prop);
@@ -177,5 +181,6 @@ internal static class ModelDocumentаtionGenerator
 
         return sb.ToString();
     }
+
     #endregion
 }

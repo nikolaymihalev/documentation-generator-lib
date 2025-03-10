@@ -1,5 +1,5 @@
-﻿using DocumentationLib.Common;
-using DocumentationLib.Enums;
+﻿using DocumentationLib.Enums;
+using DocumentationLib.Generators;
 
 namespace DocumentationLib;
 
@@ -7,16 +7,16 @@ public static class DocumentationGenerator
 { 
     #region Export Model
     public static string ExportModelAsYaml<T>() where T : class
-        => ModelDocumentаtionGenerator.GenerateModel<T>(DocumentType.Yaml);
+        => ModelDocumentаtionGenerator.GenerateJsonOrYmlText<T>(DocumentType.Yaml);
 
     public static string ExportModelAsJson<T>() where T : class
-        => ModelDocumentаtionGenerator.GenerateModel<T>(DocumentType.Json);
+        => ModelDocumentаtionGenerator.GenerateJsonOrYmlText<T>(DocumentType.Json);
 
     public static string ExportModelAsMarkdown<T>() where T : class
-        => ModelDocumentаtionGenerator.GenerateText<T>(DocumentType.Markdown);
+        => ModelDocumentаtionGenerator.GenerateMarkdownOrCsvText<T>(DocumentType.Markdown);
 
     public static string ExportModelAsCsv<T>() where T : class
-        => ModelDocumentаtionGenerator.GenerateText<T>(DocumentType.Csv);
+        => ModelDocumentаtionGenerator.GenerateMarkdownOrCsvText<T>(DocumentType.Csv);
 
     #endregion
 

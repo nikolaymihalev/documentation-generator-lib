@@ -23,16 +23,36 @@ public static class DocumentationGenerator
     #region Save
 
     public static void SaveIntoFile(string[] documentations, string filePath)
-        => ModelDocumentаtionGenerator.GenerateFile(documentations, filePath, null, false);
+        => GenerateFile(documentations, filePath, null, false);
 
     public static void SaveIntoFile(string[] documentations, string filePath, string fileName)
-        => ModelDocumentаtionGenerator.GenerateFile(documentations, filePath, fileName, false);
+        => GenerateFile(documentations, filePath, fileName, false);
 
     public static void SaveIntoFile(string[] documentations, string filePath, bool append)
-        => ModelDocumentаtionGenerator.GenerateFile(documentations, filePath, null, append);
+        => GenerateFile(documentations, filePath, null, append);
 
     public static void SaveIntoFile(string[] documentations, string filePath, string? fileName, bool append)
-        => ModelDocumentаtionGenerator.GenerateFile(documentations, filePath, fileName, append);
+        => GenerateFile(documentations, filePath, fileName, append);
 
-    #endregion 
+    #endregion
+
+    #region Private Methods
+    private static void GenerateFile(string[] documentations, string filePath, string? fileName = null, bool append = false)
+    {
+        if (string.IsNullOrEmpty(fileName))
+            fileName = "model_documentation.txt";
+
+        Directory.CreateDirectory(filePath);
+
+        string fullPath = Path.Combine(filePath, fileName!);
+
+        using (StreamWriter sw = new StreamWriter(fullPath, append))
+        {
+            foreach (var documentation in documentations)
+            {
+                sw.WriteLine(documentation);
+            }
+        }
+    }
+    #endregion
 }

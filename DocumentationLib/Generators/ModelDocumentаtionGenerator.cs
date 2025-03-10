@@ -51,24 +51,6 @@ internal class ModelDocumentаtionGenerator : IDocumentationGenerator
         };
     }
 
-    public static void GenerateFile(string[] documentations, string filePath, string? fileName = null, bool append = false)
-    {
-        if (string.IsNullOrEmpty(fileName))
-            fileName = "model_documentation.txt";
-
-        Directory.CreateDirectory(filePath);
-
-        string fullPath = Path.Combine(filePath, fileName!);
-
-        using (StreamWriter sw = new StreamWriter(fullPath, append))
-        {
-            foreach (var documentation in documentations)
-            {
-                sw.WriteLine(documentation);
-            }
-        }
-    }
-
     #endregion
 
     #region Private Methods

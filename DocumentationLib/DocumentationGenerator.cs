@@ -4,7 +4,8 @@ using DocumentationLib.Enums;
 namespace DocumentationLib;
 
 public static class DocumentationGenerator
-{
+{ 
+    #region Export Model
     public static string ExportModelAsYaml<T>() where T : class
         => ModelDocumentGenerator.GenerateModel<T>(DocumentType.Yaml);
 
@@ -17,6 +18,10 @@ public static class DocumentationGenerator
     public static string ExportModelAsCsv<T>() where T : class
         => ModelDocumentGenerator.GenerateText<T>(DocumentType.Csv);
 
+    #endregion
+
+    #region Save
+
     public static void SaveIntoFile(string[] documentations, string filePath)
         => ModelDocumentGenerator.GenerateFile(documentations, filePath, null, false);
 
@@ -28,4 +33,6 @@ public static class DocumentationGenerator
 
     public static void SaveIntoFile(string[] documentations, string filePath, string? fileName, bool append)
         => ModelDocumentGenerator.GenerateFile(documentations, filePath, fileName, append);
+
+    #endregion 
 }

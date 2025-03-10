@@ -1,10 +1,10 @@
-﻿using System.ComponentModel;
+﻿using DocumentationLib.Constants;
+using DocumentationLib.Enums;
+using System.ComponentModel;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Xml.Linq;
-using DocumentationLib.Constants;
-using DocumentationLib.Enums;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -22,9 +22,9 @@ internal static class ModelDocumentаtionGenerator
         switch (format)
         {
             case DocumentType.Markdown:
-                stringBuilder.AppendLine(string.Format(FormatTextConstants.MarkdownHeader, modelType.Name)); break;
+                stringBuilder.AppendLine(string.Format(ModelTextConstants.MarkdownHeader, modelType.Name)); break;
             case DocumentType.Csv:
-                stringBuilder.AppendLine(FormatTextConstants.CsvHeader); break;
+                stringBuilder.AppendLine(string.Format(ModelTextConstants.CsvHeader, modelType.Name)); break;
         }
         
         stringBuilder.AppendLine(GetText(modelType, format, stringBuilder));
@@ -109,22 +109,6 @@ internal static class ModelDocumentаtionGenerator
         return "-";
     }
 
-    private static string GetXmlSummary(string xmlFilePath, Type modelType, PropertyInfo property)
-    {
-        if (File.Exists(xmlFilePath))
-        {
-            XDocument _xmlDocumentation = XDocument.Load(xmlFilePath);
-
-            string memberName = $"P:{modelType.FullName}.{property.Name}";
-            var memberNode = _xmlDocumentation.Descendants("member")
-                .FirstOrDefault(x => x.Attribute("name")?.Value == memberName);
-
-            return memberNode?.Element("summary")?.Value.Trim()!;
-        }
-
-        return string.Empty;
-    }
-
     private static object GetModel(Type modelType)
     {
         var properties = modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
@@ -185,9 +169,9 @@ internal static class ModelDocumentаtionGenerator
             switch (format)
             {
                 case DocumentType.Markdown:
-                    sb.AppendLine(string.Format(FormatTextConstants.MarkdownRow, propName, typeName, description, attributes, value)); break;
+                    sb.AppendLine(string.Format(ModelTextConstants.MarkdownRow, propName, typeName, description, attributes, value)); break;
                 case DocumentType.Csv:
-                    sb.AppendLine(string.Format(FormatTextConstants.CsvRow, propName, typeName, description, attributes, value)); break;
+                    sb.AppendLine(string.Format(ModelTextConstants.CsvRow, propName, typeName, description, attributes, value)); break;
             }
         }
 

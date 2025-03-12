@@ -25,5 +25,7 @@ namespace DocumentationLib.Constants
             "- **Description:** {3}" +
             Environment.NewLine +
             "- **Parameters:**";
+
+        public static string CsvDescription = "{0},HTTP Method,{1},Route,`{2}`,Description,{3},Parameters,";
     }
 }

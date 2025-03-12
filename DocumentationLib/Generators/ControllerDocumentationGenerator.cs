@@ -54,7 +54,8 @@ internal class ControllerDocumentationGenerator : IDocumentationGenerator
         return format switch
         {
             DocumentType.Markdown => string.Format(ControllerTextConstants.MarkdownDescription, method.Name, httpMethod, route, description),
-            DocumentType.Csv => string.Format(ControllerTextConstants.CsvDescription, method.Name, httpMethod, route, description)
+            DocumentType.Csv => string.Format(ControllerTextConstants.CsvDescription, method.Name, httpMethod, route, description),
+            _ => string.Format(ControllerTextConstants.MarkdownDescription, method.Name, httpMethod, route, description)
         };
     }
 

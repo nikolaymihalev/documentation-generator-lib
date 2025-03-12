@@ -53,7 +53,7 @@ internal class ControllerDocumentationGenerator : IDocumentationGenerator
             stringBuilder.AppendLine();
         }
 
-        return stringBuilder.ToString();
+        return stringBuilder.ToString().Trim();
     }
 
     public static string GenerateJsonOrYmlText<T>(DocumentType format)

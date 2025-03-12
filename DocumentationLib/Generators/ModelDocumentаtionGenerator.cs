@@ -31,7 +31,7 @@ internal class ModelDocumentаtionGenerator : IDocumentationGenerator
 
         stringBuilder.AppendLine(GetText(modelType, format, stringBuilder));
 
-        return stringBuilder.ToString();
+        return stringBuilder.ToString().Trim();
     }
 
     public static string GenerateJsonOrYmlText<T>(DocumentType format)

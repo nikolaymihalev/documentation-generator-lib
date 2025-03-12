@@ -4,6 +4,9 @@ using DocumentationLib.Constants;
 using DocumentationLib.Enums;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
+using YamlDotNet.Serialization.NamingConventions;
+using YamlDotNet.Serialization;
 
 namespace DocumentationLib.Generators;
 
@@ -41,7 +44,17 @@ internal class ControllerDocumentationGenerator : IDocumentationGenerator
 
     public static string GenerateJsonOrYmlText<T>(DocumentType format)
     {
-        throw new NotImplementedException();
+        Type modelType = typeof(T);
+
+        return format switch 
+        {
+            DocumentType.Json => JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true }),
+            DocumentType.Yaml => new SerializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .Build()
+                .Serialize(result),
+            _ => string.Empty
+        };
     }
 
     #region Private Methods

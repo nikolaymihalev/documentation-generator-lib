@@ -29,26 +29,9 @@ internal class ControllerDocumentationGenerator : IDocumentationGenerator
 
         foreach (var method in methods)
         {
-            stringBuilder.AppendLine(GetText(method, routePrefix));
+            stringBuilder.AppendLine(GetMethodText(method, routePrefix, format));
 
-            if (method.GetParameters().Any())
-            {
-                stringBuilder.AppendLine("| Name | Type | Required |");
-                stringBuilder.AppendLine("|------|------|----------|");
-
-                foreach (var param in method.GetParameters())
-                {
-                    string paramName = param.Name;
-                    string paramType = param.ParameterType.Name;
-                    string isRequired = param.HasDefaultValue ? "No" : "Yes";
-
-                    stringBuilder.AppendLine($"| {paramName} | {paramType} | {isRequired} |");
-                }
-            }
-            else
-            {
-                stringBuilder.AppendLine("  - No parameters.");
-            }
+            stringBuilder.AppendLine(GetParametersText(method, format));            
 
             stringBuilder.AppendLine();
         }
@@ -62,22 +45,49 @@ internal class ControllerDocumentationGenerator : IDocumentationGenerator
     }
 
     #region Private Methods
-    private static string GetText(MethodInfo method, string routePrefix)
+    private static string GetMethodText(MethodInfo method, string routePrefix, DocumentType format)
     {
-
         string route = GetRoute(routePrefix, method);
         string httpMethod = GetHttpMethod(method);
         string description = GetMethodDescription(method);
 
-        return $"## {method.Name}" +
-            Environment.NewLine +
-            $"- **HTTP Method:** {httpMethod}" +
-            Environment.NewLine +
-            $"- **Route:** `{route}`" +
-            Environment.NewLine +
-            $"- **Description:** {description}" +
-            Environment.NewLine +
-            $"- **Parameters:**";
+        return format switch
+        {
+            DocumentType.Markdown => string.Format(ControllerTextConstants.MarkdownDescription, method.Name, httpMethod, route, description),
+            DocumentType.Csv => string.Format(ControllerTextConstants.CsvDescription, method.Name, httpMethod, route, description)
+        };
+    }
+
+    private static string GetParametersText(MethodInfo method, DocumentType format)
+    {
+        string result = "";
+
+        if (method.GetParameters().Any())
+        {
+            if(format == DocumentType.Csv)
+            {
+
+            }
+            else if(format == DocumentType.Markdown)
+            {
+                result += ControllerTextConstants.MarkdownRow;
+
+                foreach (var param in method.GetParameters())
+                {
+                    string paramName = param.Name!;
+                    string paramType = param.ParameterType.Name;
+                    string isRequired = param.HasDefaultValue ? YesNo.No.ToString() : YesNo.Yes.ToString();
+
+                    result += string.Format(ControllerTextConstants.MarkdownParametersRow, paramName, paramType, isRequired);
+                }
+            }
+        }
+        else
+        {
+            result += "  -";
+        }
+
+        return result;
     }
 
     private static string GetControllerRoutePrefix(Type controllerType)

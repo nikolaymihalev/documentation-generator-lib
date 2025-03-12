@@ -67,7 +67,16 @@ internal class ControllerDocumentationGenerator : IDocumentationGenerator
         {
             if(format == DocumentType.Csv)
             {
+                result += ControllerTextConstants.CsvRow;
 
+                foreach (var param in method.GetParameters())
+                {
+                    string paramName = param.Name!;
+                    string paramType = param.ParameterType.Name;
+                    string isRequired = param.HasDefaultValue ? YesNo.No.ToString() : YesNo.Yes.ToString();
+
+                    result += string.Format(ControllerTextConstants.CsvParametersRow, paramName, paramType, isRequired);
+                }
             }
             else if(format == DocumentType.Markdown)
             {
@@ -85,7 +94,7 @@ internal class ControllerDocumentationGenerator : IDocumentationGenerator
         }
         else
         {
-            result += "  -";
+            result = "-";
         }
 
         return result;

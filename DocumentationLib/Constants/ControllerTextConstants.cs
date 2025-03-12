@@ -13,7 +13,11 @@ namespace DocumentationLib.Constants
                     "|------|------|----------|" +
                     Environment.NewLine;
 
+        public static string CsvRow = "Name,Type,Required";
+
         public static string MarkdownParametersRow = "| {0} | {1} | {2} |";
+
+        public static string CsvParametersRow = "{0},{1},{2}";
 
         public static string MarkdownDescription = 
             "## {0}" +

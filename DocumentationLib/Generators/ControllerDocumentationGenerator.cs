@@ -46,6 +46,8 @@ internal class ControllerDocumentationGenerator : IDocumentationGenerator
     {
         Type modelType = typeof(T);
 
+        var result = GetModel(modelType);
+
         return format switch 
         {
             DocumentType.Json => JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true }),
@@ -111,6 +113,11 @@ internal class ControllerDocumentationGenerator : IDocumentationGenerator
         }
 
         return result;
+    }
+
+    private static object GetModel(Type model)
+    {
+        throw new NotImplementedException();
     }
 
     private static string GetControllerRoutePrefix(Type controllerType)

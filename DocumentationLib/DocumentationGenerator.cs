@@ -40,7 +40,7 @@ public static class DocumentationGenerator
     private static void GenerateFile(string[] documentations, string filePath, string? fileName = null, bool append = false)
     {
         if (string.IsNullOrEmpty(fileName))
-            fileName = "model_documentation.txt";
+            fileName = "documentation.txt";
 
         Directory.CreateDirectory(filePath);
 
